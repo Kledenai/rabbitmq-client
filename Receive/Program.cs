@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using RabbitMQ.Util;
 using System.Text;
 
 namespace Receive
