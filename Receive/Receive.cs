@@ -10,8 +10,6 @@ namespace Receive
     public static void Main()
     {
       var factory = new ConnectionFactory() {
-        UserName = "test",
-        Password = "test",
         HostName = "master.sharenj.org",
         VirtualHost = "jkalil",
       };
