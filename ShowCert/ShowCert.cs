@@ -1,10 +1,6 @@
 using System;
-using System.Security.Cryptography;
-using System.Security.Permissions;
 using System.IO;
-using RabbitMQ.Client;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace ShowCert
 {
@@ -14,10 +10,8 @@ namespace ShowCert
     {
       try
       {
-          var x509 = new X509Certificate2(File.ReadAllBytes(@"C:\certs\rabbitmq\client.cer"));
-          //Create X509Certificate2 object from .cer file.
+          var x509 = new X509Certificate2(File.ReadAllBytes(@"C:\certs\rabbitmq-client\Certificate/client.pem"));
 
-          //Print to console information contained in the certificate.
           Console.WriteLine("{0}Subject: {1}{0}", Environment.NewLine, x509.Subject);
           Console.WriteLine("{0}Issuer: {1}{0}", Environment.NewLine, x509.Issuer);
           Console.WriteLine("{0}Version: {1}{0}", Environment.NewLine, x509.Version);

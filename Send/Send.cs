@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Net.Security;
 using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
-using RabbitMQ.Util;
 
 namespace Send
 {
@@ -13,21 +11,21 @@ namespace Send
     {
       try
       {
-        var factory = new ConnectionFactory
+        var factory = new ConnectionFactory()
         {
             HostName = "master.sharenj.org",
             VirtualHost = "jkalil",
             Port = 5671,
         };
 
-        factory.AuthMechanisms = new AuthMechanismFactory[]{ new ExternalMechanismFactory()};
+        factory.AuthMechanisms = new IAuthMechanismFactory[]{ new ExternalMechanismFactory()};
 
         factory.Ssl.Version = System.Security.Authentication.SslProtocols.Tls12;
 
-        factory.Ssl.ServerName = "master.sharenj.org";
+        factory.Ssl.ServerName = "kirk.sharenj.org";
         factory.Ssl.CertPath = @"C:\code\api\rabbitmq-client\Certificate\client.pem";
         factory.Ssl.Enabled = true;
-        using (IConnection connection = cf.CreateConnection())
+        using (IConnection connection = factory.CreateConnection())
         {
           using (IModel channel = connection.CreateModel())
           {
@@ -38,7 +36,7 @@ namespace Send
 
             channel.BasicPublish(exchange: "", routingKey: "TestAppQueue", basicProperties: null, body: body);
 
-            BasicGetResult result = ch.BasicGet("rabbitmq-dotnet-test", true);
+            BasicGetResult result = channel.BasicGet("rabbitmq-dotnet-test", true);
               if (result == null)
               {
                   Console.WriteLine("No message received.");
@@ -46,7 +44,7 @@ namespace Send
               else
               {
                 Console.WriteLine("Received:", message);
-                DebugUtil.DumpProperties(result, Console.Out, 0);
+                // DebugUtil.DumpProperties(result, Console.Out, 0);
               }
           }
         }
