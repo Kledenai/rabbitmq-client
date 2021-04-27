@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Text;
 using RabbitMQ.Client;
+using System.Net.Security;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
-using System.Text;
 
 namespace Receive
 {
@@ -17,10 +18,16 @@ namespace Receive
           VirtualHost = "jkalil",
         };
 
+        factory.AuthMechanisms = new IAuthMechanismFactory[]{ new ExternalMechanismFactory()};
+
         factory.Ssl.Version = System.Security.Authentication.SslProtocols.Tls12;
 
-        factory.Ssl.ServerName = "kirk.sharenj.org";
-        factory.Ssl.CertPath = @"C:\code\api\rabbitmq-client\Certificate\client.pem";
+        factory.Ssl.AcceptablePolicyErrors = SslPolicyErrors.RemoteCertificateNotAvailable |
+                                              SslPolicyErrors.RemoteCertificateChainErrors |
+                                              SslPolicyErrors.RemoteCertificateNameMismatch;
+
+        factory.Ssl.ServerName = "master.sharenj.org";
+        factory.Ssl.CertPath = @"C:\code\api\rabbitmq-client\Certificate\client.cer";
         factory.Ssl.Enabled = true;
         factory.Port = 5671;
 
