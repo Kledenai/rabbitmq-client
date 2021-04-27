@@ -53,20 +53,22 @@ namespace Send
 
         factory.AuthMechanisms =  new IAuthMechanismFactory[]{ new ExternalMechanismFactory()};
 
-        factory.Ssl.Version = System.Security.Authentication.SslProtocols.Tls13;
+        factory.Ssl.Version = System.Security.Authentication.SslProtocols.Tls12;
 
         factory.Ssl.AcceptablePolicyErrors = SslPolicyErrors.RemoteCertificateNotAvailable |
                                               SslPolicyErrors.RemoteCertificateChainErrors |
                                               SslPolicyErrors.RemoteCertificateNameMismatch;
 
-        // var x509 = new X509Certificate2(File.ReadAllBytes(@"C:/code/api/rabbitmq-client/Certificate/client.cer"));
+        var x509 = new X509Certificate2(File.ReadAllBytes(@"C:/code/api/rabbitmq-client/Certificate/client.cer"));
 
-        // Console.WriteLine(x509.Subject);
+        Console.WriteLine(x509.Subject);
+        Console.ReadKey();
 
         // factory.Ssl.CertificateSelectionCallback = new LocalCertificateSelectionCallback(SelectLocalCertificate);
 
-        factory.Ssl.ServerName = "master.sharenj.org";
-        //factory.Ssl.CertPath = @"C:\code\api\rabbitmq-client\Certificate\server.pem";
+        factory.Ssl.ServerName = "kirk.sharenj.org";
+        factory.Ssl.CertPath = @"C:\code\api\rabbitmq-client\Certificate\client.p12";
+        factory.Ssl.CertPassphrase = "test";
         factory.Ssl.Enabled = true;
         using (IConnection connection = factory.CreateConnection())
         {

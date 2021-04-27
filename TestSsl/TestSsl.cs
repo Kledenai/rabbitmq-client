@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-
+using RabbitMQ.Client.Exceptions;
 using RabbitMQ.Client;
 using RabbitMQ.Util;
 
@@ -9,25 +9,45 @@ namespace TestSsl
 {
   public class TestSsl
   {
-    public static int Main(string[] args)
+    public static void Main()
     {
-      ConnectionFactory cf = new ConnectionFactory();
+      try
+      {
+        ConnectionFactory cf = new ConnectionFactory();
 
-      cf.HostName = "master.sharenj.org";
-      cf.Ssl.Enabled = true;
-      cf.Ssl.ServerName = "master.sharenj.org";
-      cf.Ssl.CertPath = @"C:\code\api\rabbitmq-client\Certificate\client.cer";
+        cf.Ssl.Enabled = true;
+        cf.Ssl.ServerName = System.Net.Dns.GetHostName();
+        cf.Ssl.CertPath = @"C:\code\api\rabbitmq-client\Certificate\client.p12";
+        cf.Ssl.CertPassphrase = "test";
 
-      using (IConnection conn = cf.CreateConnection()) {
-        using (IModel ch = conn.CreateModel()) {
-        Console.WriteLine("Successfully connected and opened a channel");
-        ch.QueueDeclare("rabbitmq-dotnet-test", false, false, false, null);
-        Console.WriteLine("Successfully declared a queue");
-        // ch.QueueDelete("rabbitmq-dotnet-test");
-        // Console.WriteLine("Successfully deleted the queue");
+        cf.HostName = "master.sharenj.org";
+
+        using (IConnection conn = cf.CreateConnection()) {
+          using (IModel ch = conn.CreateModel()) {
+          Console.WriteLine("Successfully connected and opened a channel");
+          ch.QueueDeclare("rabbitmq-dotnet-test", false, false, false, null);
+          Console.WriteLine("Successfully declared a queue");
+          // ch.QueueDelete("rabbitmq-dotnet-test");
+          // Console.WriteLine("Successfully deleted the queue");
+          }
         }
+        Console.ReadKey();
       }
-      return 0;
+      catch (BrokerUnreachableException bex)
+      {
+          Exception ex = bex;
+          while (ex != null)
+          {
+              Console.WriteLine(ex.Message);
+              Console.WriteLine("inner:");
+              ex = ex.InnerException;
+          }
+      }
+      catch (Exception ex)
+      {
+          Console.WriteLine(ex.ToString());
+      }
+      Console.ReadKey();
     }
   }
 }
